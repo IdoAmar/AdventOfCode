@@ -12,7 +12,8 @@ namespace Stage1Part2
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
             string input = await getInputFromUrl("https://adventofcode.com/2021/day/1/input", cookieValue);
-            int result = GetHigherThenCount(input);
+            int result = GetHigherThenTriosCount(input);
+            Console.WriteLine("The result is : " + result);
         }
         public static async Task<string> getInputFromUrl(string url, string cookieValue)
         {
@@ -21,7 +22,7 @@ namespace Stage1Part2
             wb.Headers.Add(HttpRequestHeader.Cookie, cookie);
             return await wb.DownloadStringTaskAsync(url);
         }
-        public static int GetHigherThenCount(string str)
+        public static int GetHigherThenTriosCount(string str)
         {
             var parsedInput = str.Trim().Split("\n").Select(e => Int32.Parse(e));
             int length = parsedInput.Count();
