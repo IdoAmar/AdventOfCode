@@ -2,6 +2,7 @@
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace Stage1
 {
@@ -11,16 +12,9 @@ namespace Stage1
         {
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
-            string input = await getInputFromUrl("https://adventofcode.com/2021/day/1/input",cookieValue);
+            string input = await ScrapingUtilities.getInputFromUrl("https://adventofcode.com/2021/day/1/input",cookieValue);
             int result = GetHigherThenCount(input);
             Console.WriteLine("The result is : " + result);
-        }
-        public static async Task<string> getInputFromUrl(string url, string cookieValue)
-        {
-            var cookie = "session=" + cookieValue;
-            WebClient wb = new WebClient();
-            wb.Headers.Add(HttpRequestHeader.Cookie, cookie);
-            return await wb.DownloadStringTaskAsync(url);
         }
         public static int GetHigherThenCount(string str)
         {

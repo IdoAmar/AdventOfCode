@@ -3,7 +3,7 @@ using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 using Utilities;
-namespace Day2Part1
+namespace Day2Part2
 {
     class Program
     {
@@ -19,10 +19,15 @@ namespace Day2Part1
         public static int GetFinalPosition(string str)
         {
             var parsedInput = str.Trim().Split("\n");
-            var pairs = parsedInput
-                .GroupBy(x => x.Split(" ")[0])
-                .ToDictionary(g => g.Key, g => g.Select(e => Int32.Parse(e.Split(" ")[1])).Sum());
-            return (pairs["down"] - pairs["up"]) * pairs["forward"];
+            var ans = parsedInput
+                .Select(e => (verb: e.Split(" ")[0],amount: Int32.Parse(e.Split(" ")[1])))
+                .Aggregate((horizontal: 0, depth: 0, aim: 0), 
+                    (a, c) => c.verb == "up" ? 
+                    (a.horizontal, a.depth,a.aim -= c.amount) :
+                    c.verb == "down" ?
+                    (a.horizontal, a.depth, a.aim += c.amount):
+                    (a.horizontal += c.amount, a.depth += a.aim * c.amount, a.aim));
+            return ans.horizontal * ans.depth;
         }
     }
 }
