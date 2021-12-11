@@ -13,11 +13,11 @@ namespace Day3Part1
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
             string input = await ScrapingUtilities.getInputFromUrl("https://adventofcode.com/2021/day/3/input", cookieValue);
-            int result = GetFinalPosition(input);
+            int result = GetPowerConsumption(input);
             Console.WriteLine("The result is : " + result);
         }
 
-        public static int GetFinalPosition(string str)
+        public static int GetPowerConsumption(string str)
         {
             var parsedInput = str.Trim().Split("\n").Select(s => s.Select(c => c - '0'));
             var powArray = parsedInput
