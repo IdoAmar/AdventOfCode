@@ -25,18 +25,21 @@ namespace Day8
             var numbers = parsedInput.Select(e => DecryptDataAndValues(e.encryptedData, e.values));
             return numbers.Select(e => e.Count(ie => (ie == 1 || ie == 4 || ie == 7 || ie == 8))).Sum();
         }
+
         public static int GetAllNumbers(string str)
         {
             var parsedInput = ParseInput(str).ToList();
             var numbers = parsedInput.Select(e => DecryptDataAndValues(e.encryptedData, e.values));
             return numbers.Select(e => Int32.Parse(e.Aggregate("", (a, c) => a + c))).Sum();
         }
+
         public static IEnumerable<int> DecryptDataAndValues(string[] encryptedData, string[] values)
         {
             var decryptor = decryptionDictionaryFactory(encryptedData);
             var decrypedValues = values.Select(e => e.Select(ie => decryptor[ie]).Aggregate("", (a, c) => a + c));
             return decrypedValues.Select(s => ParseToNumber(s));
         }
+
         public static Dictionary<char, char> decryptionDictionaryFactory(string[] encryptedData)
         {
             var reverseLookup = encryptedData.SelectMany(e => e).GroupBy(g => g).ToDictionary(g => g.Key, g => g.Count());

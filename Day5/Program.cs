@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace Day5Part2
+namespace Day5
 {
     class Program
     {
@@ -13,11 +13,46 @@ namespace Day5Part2
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
             string input = await ScrapingUtilities.getInputFromUrl("https://adventofcode.com/2021/day/5/input", cookieValue);
-            int result = GetDangerousSpots(input);
-            Console.WriteLine("The result is : " + result);
+            int firstPartResult = GetDangerousSpots(input);
+            int secondPartResult = GetDangerousSpotsWithDiagonals(input);
+            Console.WriteLine("First part result is : " + firstPartResult);
+            Console.WriteLine("Second part result is : " + secondPartResult);
         }
 
         public static int GetDangerousSpots(string str)
+        {
+            var parsedInput = parseInput(str);
+            var matrix = new int[999, 999];
+            var dangerousSpots = 0;
+            foreach (var e in parsedInput)
+            {
+                if (e.x1 == e.x2)
+                {
+                    var start = Math.Min(e.y1, e.y2);
+                    var end = Math.Max(e.y1, e.y2);
+                    for (int i = start; i <= end; i++)
+                    {
+                        matrix[e.x1, i]++;
+                        if (matrix[e.x1, i] == 2)
+                            dangerousSpots++;
+                    }
+                }
+                if (e.y1 == e.y2)
+                {
+                    var start = Math.Min(e.x1, e.x2);
+                    var end = Math.Max(e.x1, e.x2);
+                    for (int i = start; i <= end; i++)
+                    {
+                        matrix[i, e.y1]++;
+                        if (matrix[i, e.y1] == 2)
+                            dangerousSpots++;
+                    }
+                }
+            }
+            return dangerousSpots;
+        }
+
+        public static int GetDangerousSpotsWithDiagonals(string str)
         {
             var parsedInput = parseInput(str);
             var matrix = new int[999, 999];

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Utilities;
-using System.Collections.Generic;
-namespace Day3Part2
+
+namespace Day3
 {
     class Program
     {
@@ -12,10 +13,25 @@ namespace Day3Part2
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
             string input = await ScrapingUtilities.getInputFromUrl("https://adventofcode.com/2021/day/3/input", cookieValue);
-            int result = GetLifeSupportRating(input);
-            Console.WriteLine("The result is : " + result);
+            int firstPartResult = GetPowerConsumption(input);
+            int secondPartResult = GetLifeSupportRating(input);
+            Console.WriteLine("First part result is : " + firstPartResult);
+            Console.WriteLine("Second part result is : " + secondPartResult);
         }
+        #region Part1
+        public static int GetPowerConsumption(string str)
+        {
+            var parsedInput = str.Trim().Split("\n").Select(s => s.Select(c => c - '0'));
+            var powArray = parsedInput
+                .Aggregate(parsedInput.ElementAt(0), (a, c) => a.Zip(c, (e1, e2) => e1 + e2))
+                .Select(e => parsedInput.Count() - e < parsedInput.Count() / 2 ? 1 : 0)
+                .Reverse()
+                .Select((e, i) => (int)Math.Pow(2, i) * e);
+            return ((int)Math.Pow(2, powArray.Count()) - 1 - powArray.Sum()) * powArray.Sum();
+        }
+        #endregion
 
+        #region Part2
         public static int GetLifeSupportRating(string str)
         {
             var parsedInput = str.Trim().Split("\n");
@@ -24,9 +40,9 @@ namespace Day3Part2
 
             for (int i = 0; i < parsedInput.First().Count(); i++)
             {
-                if(mostList.Count != 1)
+                if (mostList.Count != 1)
                     mostList = FilterMostByBit(mostList, i);
-                if(leastList.Count != 1)
+                if (leastList.Count != 1)
                     leastList = FilterLeastByBit(leastList, i);
             }
             return StringOfBinaryToNumber(mostList.First()) * StringOfBinaryToNumber(leastList.First());
@@ -55,5 +71,6 @@ namespace Day3Part2
         {
             return binary.Reverse().Select((e, i) => (int)Math.Pow(2, i) * (e - '0')).Sum();
         }
+        #endregion
     }
 }

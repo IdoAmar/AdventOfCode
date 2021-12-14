@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Utilities;
 using BoardsType = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<string>>>;
 
-namespace Day4Part1
+namespace Day4
 {
     class Program
     {
@@ -14,28 +14,50 @@ namespace Day4Part1
             Console.WriteLine("Enter the session cookie value");
             string cookieValue = Console.ReadLine();
             string input = await ScrapingUtilities.getInputFromUrl("https://adventofcode.com/2021/day/4/input", cookieValue);
-            int result = GetFirstWinningBoardScore(input); 
-            Console.WriteLine("The result is : " + result);
+            int firstPartResult = GetFirstWinningBoardScore(input);
+            int secondPartResult = GetLastWinningBoardScore(input);
+            Console.WriteLine("First part result is : " + firstPartResult);
+            Console.WriteLine("Second part result is : " + secondPartResult);
         }
 
         public static int GetFirstWinningBoardScore(string str)
         {
             (var results , var boards) = ParseInput(str);
-            return CheckForWinningBoard(boards, results);
+            return CheckForWinningBoard(boards, results, 0);
         }
-        public static int CheckForWinningBoard(BoardsType boards, IEnumerable<string> results)
+
+        public static int GetLastWinningBoardScore(string str)
         {
+            (var results, var boards) = ParseInput(str);
+            return CheckForWinningBoard(boards, results, boards.Count());
+        }
+
+        public static int CheckForWinningBoard(BoardsType boards, IEnumerable<string> results, int boardIndex)
+        {
+            var currentBoards = boards.ToList();
+            int res = 0;
             for (int i = 5; i < results.Count(); i++)
             {
-                for (int j = 0; j < boards.Count(); j++)
+                var newBoards = new List<IEnumerable<IEnumerable<string>>>();
+                for (int j = 0; j < currentBoards.Count(); j++)
                 {
-                    var res = CheckBoard(boards.ElementAt(j), results.Take(i));
-                    if (res > 0)
-                        return res;
+                    var current = CheckBoard(currentBoards.ElementAt(j), results.Take(i));
+                    if (current > 0)
+                    {
+                        res = current;
+                    }
+                    else
+                        newBoards.Add(currentBoards.ElementAt(j));
+
                 }
+                currentBoards = newBoards;
+
+                if (boards.Count() - currentBoards.Count() == boardIndex + 1)
+                    break;
             }
-            return 0;
+            return res;
         }
+
         public static int CheckBoard(IEnumerable<IEnumerable<string>> board, IEnumerable<string> results)
         {
             bool bingo = false;
@@ -65,6 +87,7 @@ namespace Day4Part1
             int finalScore = score * Int32.Parse(results.Last());
             return bingo ? finalScore : 0;
         }
+
         public static (IEnumerable<string> results, BoardsType) ParseInput(string str)
         {
             var parsedInput = str.Trim().Split("\n\n");
